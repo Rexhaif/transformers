@@ -106,13 +106,13 @@ class XLMRobertaTokenizer(PreTrainedTokenizer):
         # spm      | '<unk>' | '<s>'   | '</s>' | ','     | '.' | '▁' | 's' | '▁de' | '-'   | '▁a'
 
         # Mimic fairseq token-to-id alignment for the first 4 token
-        self.fairseq_tokens_to_ids = {"<s>": 0, "<pad>": 1, "</s>": 2, "<unk>": 3}
+        #self.fairseq_tokens_to_ids = {"<s>": 0, "<pad>": 1, "</s>": 2, "<unk>": 3}
 
         # The first "real" token "," has position 4 in the original fairseq vocab and position 3 in the spm vocab
-        self.fairseq_offset = 1
+        #self.fairseq_offset = 1
 
-        self.fairseq_tokens_to_ids["<mask>"] = len(self.sp_model) + len(self.fairseq_tokens_to_ids)
-        self.fairseq_ids_to_tokens = {v: k for k, v in self.fairseq_tokens_to_ids.items()}
+        #self.fairseq_tokens_to_ids["<mask>"] = len(self.sp_model) + len(self.fairseq_tokens_to_ids)
+        #self.fairseq_ids_to_tokens = {v: k for k, v in self.fairseq_tokens_to_ids.items()}
 
     def __getstate__(self):
         state = self.__dict__.copy()
@@ -188,22 +188,22 @@ class XLMRobertaTokenizer(PreTrainedTokenizer):
 
     @property
     def vocab_size(self):
-        return len(self.sp_model) + len(self.fairseq_tokens_to_ids)
+        return len(self.sp_model)# + len(self.fairseq_tokens_to_ids)
 
     def _tokenize(self, text):
         return self.sp_model.EncodeAsPieces(text)
 
     def _convert_token_to_id(self, token):
         """ Converts a token (str) in an id using the vocab. """
-        if token in self.fairseq_tokens_to_ids:
-            return self.fairseq_tokens_to_ids[token]
-        return self.sp_model.PieceToId(token) + self.fairseq_offset
+        #if token in self.fairseq_tokens_to_ids:
+        #    return self.fairseq_tokens_to_ids[token]
+        return self.sp_model.PieceToId(token)# + self.fairseq_offset
 
     def _convert_id_to_token(self, index):
         """Converts an index (integer) in a token (str) using the vocab."""
-        if index in self.fairseq_ids_to_tokens:
-            return self.fairseq_ids_to_tokens[index]
-        return self.sp_model.IdToPiece(index - self.fairseq_offset)
+        #if index in self.fairseq_ids_to_tokens:
+        #    return self.fairseq_ids_to_tokens[index]
+        return self.sp_model.IdToPiece(index)# - self.fairseq_offset)
 
     def convert_tokens_to_string(self, tokens):
         """Converts a sequence of tokens (strings for sub-words) in a single string."""
